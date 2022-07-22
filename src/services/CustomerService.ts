@@ -14,15 +14,15 @@ const create = (data: ICustomerData | any) => {
 };
 
 const update = (id: any, data: ICustomerData | any) => {
-  return http.put<any>(`/customers/${id}`, data);
+  return http.put<any>(`/customers/${id}`, {customer: { attributes: data?.attributes}});
 };
 
 const remove = (id: any) => {
   return http.delete<any>(`/customers/${id}`);
 };
 
-const removeAll = () => {
-  return http.delete<any>(`/customers`);
+const removeAttribute = (id: any, name: string) => {
+  return http.delete<any>(`/customers/${id}/attributes/${name}`);
 };
 
 const findByTitle = (title: string) => {
@@ -35,8 +35,8 @@ const CustomerService = {
   create,
   update,
   remove,
-  removeAll,
   findByTitle,
+  removeAttribute
 };
 
 export default CustomerService;

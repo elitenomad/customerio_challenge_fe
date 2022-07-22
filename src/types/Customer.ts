@@ -27,7 +27,7 @@ interface Attributes {
 export default interface ICustomerData {
   id?: any | null,
   attributes?: Attributes | any,
-  events?: object,
+  events?: object | any,
   last_updated?: any,
 }
 

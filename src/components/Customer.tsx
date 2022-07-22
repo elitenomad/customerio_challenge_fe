@@ -5,7 +5,7 @@ import CustomerDataService from "../services/CustomerService";
 import ICustomerData from "../types/Customer";
 
 const Customer: React.FC = () => {
-  const { id }= useParams();
+  const { id } = useParams();
   let navigate = useNavigate();
 
   const initialCustomerState = {
@@ -16,11 +16,13 @@ const Customer: React.FC = () => {
   };
   const [currentCustomer, setCurrentCustomer] = useState<ICustomerData>(initialCustomerState);
   const [message, setMessage] = useState<string>("");
+  const [attributeKey, setAttributeKey] = useState<string>("");
+  const [attributeValue, setAttributeValue] = useState<string>("");
 
   const getCustomer = (id: string) => {
     CustomerDataService.get(id)
       .then((response: any) => {
-        setCurrentCustomer(response.data);
+        setCurrentCustomer(response?.data?.customer);
         console.log(response.data);
       })
       .catch((e: Error) => {
@@ -35,19 +37,38 @@ const Customer: React.FC = () => {
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setCurrentCustomer({ ...currentCustomer, [name]: value });
+    setCurrentCustomer(prevCustomer => ({
+        ...prevCustomer,
+        attributes: {...prevCustomer.attributes, [name]: value }
+    }));
   };
 
-  const updatePublished = (status: boolean) => {
-    var data = {
-      id: currentCustomer.id
-    };
+  const handleKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    if(value === "" || value === undefined) {
+      return
+    }
 
-    CustomerDataService.update(currentCustomer.id, data)
+    setAttributeKey(value)
+  };
+
+  const handleValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    if(value === "" || value === undefined) {
+      return
+    }
+
+    setAttributeValue(value)
+  };
+
+  const addAttribute = () => {  
+    currentCustomer.attributes[attributeKey] = attributeValue
+    CustomerDataService.update(currentCustomer.id, currentCustomer)
       .then((response: any) => {
-        console.log(response.data);
-        setCurrentCustomer({ ...currentCustomer});
-        setMessage("The status was updated successfully!");
+        setCurrentCustomer(response?.data?.customer);
+        setAttributeKey("")
+        setAttributeValue("")
+        setMessage("The attribute is added successfully!");
       })
       .catch((e: Error) => {
         console.log(e);
@@ -57,19 +78,18 @@ const Customer: React.FC = () => {
   const updateCustomer = () => {
     CustomerDataService.update(currentCustomer.id, currentCustomer)
       .then((response: any) => {
-        console.log(response.data);
-        setMessage("The customer was updated successfully!");
+        setMessage("The customer is updated successfully!");
       })
       .catch((e: Error) => {
         console.log(e);
       });
   };
 
-  const deleteCustomer = () => {
-    CustomerDataService.remove(currentCustomer.id)
+  const deleteCustomerAttribute = (name: string) => {
+    CustomerDataService.removeAttribute(currentCustomer.id, name)
       .then((response: any) => {
-        console.log(response.data);
-        navigate("/customers");
+        setCurrentCustomer(response.data.customer);
+        navigate(`/customers/${currentCustomer.id}`);
       })
       .catch((e: Error) => {
         console.log(e);
@@ -80,72 +100,80 @@ const Customer: React.FC = () => {
     <div>
       {currentCustomer ? (
         <div className="edit-form">
-          <h4>Customer</h4>
-          <form>
-            <div className="form-group">
-              <label htmlFor="title">Title</label>
-              <input
-                type="text"
-                className="form-control"
-                id="title"
-                name="title"
-                value={currentCustomer.attributes.email}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="description">Description</label>
-              <input
-                type="text"
-                className="form-control"
-                id="description"
-                name="description"
-                value={currentCustomer.attributes.first_name}
-                onChange={handleInputChange}
-              />
-            </div>
+          <h4>Customer Attributes</h4>
+          <form className="">
+            {
+              Object.keys(currentCustomer.attributes).map((key, i) => (
+                <div className="form-group" key={key}>
+                  <label className="text-muted" htmlFor={key}><i>{key}</i></label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id={key}
+                    name={key}
+                    defaultValue={currentCustomer.attributes[key]}
+                    onChange={handleInputChange}
+                  />
 
-            <div className="form-group">
-              <label>
-                <strong>Status:</strong>
-              </label>
-              {currentCustomer.attributes.ip}
-            </div>
+                  <button 
+                    type="button"
+                    className="btn btn-warning btn-sm float-right"
+                    onClick={() => deleteCustomerAttribute(key)}
+                    >
+                    Delete
+                  </button>
+                </div>
+              ))
+            }
           </form>
-
-          {currentCustomer.attributes.ip ? (
-            <button
-              className="badge badge-primary mr-2"
-              onClick={() => updatePublished(false)}
-            >
-              UnPublish
-            </button>
-          ) : (
-            <button
-              className="badge badge-primary mr-2"
-              onClick={() => updatePublished(true)}
-            >
-              Publish
-            </button>
-          )}
-
-          <button className="badge badge-danger mr-2" onClick={deleteCustomer}>
-            Delete
-          </button>
-
           <button
-            type="submit"
-            className="badge badge-success"
-            onClick={updateCustomer}
-          >
+              type="submit"
+              className="btn btn-primary btn-sm"
+              onClick={updateCustomer}
+            >
             Update
           </button>
-          <p>{message}</p>
+
+          <hr/>
+          <form className="form-inline">
+            <div className="form-group mb-2">
+              <label htmlFor="key" className="sr-only">Key</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                id={attributeKey}
+                name={attributeKey}
+                value={attributeKey}
+                onChange={handleKeyChange}
+              />
+            </div>
+            <div className="form-group mx-sm-3 mb-2">
+              <label htmlFor="value" className="sr-only">Value</label>
+              <input 
+                type="text" 
+                className="form-control" 
+                id={attributeValue}
+                name={attributeValue} 
+                onChange={handleValueChange}
+                value={attributeValue}
+              />
+            </div>
+
+            <button 
+              type="button" 
+              className="btn btn-primary mb-2"
+              onClick={addAttribute}
+            >
+                Add
+            </button>
+          </form>
+          
+          <p className="badge badge-success">{message}</p>
         </div>
       ) : (
         <div>
           <br />
-          <p>Please click on a Customer...</p>
+          <p>Customer Not Found...</p>
         </div>
       )}
     </div>
