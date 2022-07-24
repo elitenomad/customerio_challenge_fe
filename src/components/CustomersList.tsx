@@ -15,6 +15,7 @@ const CustomersList: React.FC = () => {
   const retrieveCustomers = () => {
     CustomerDataService.getAll()
       .then((response: any) => {
+        // console.log(response.data)
         setCustomers(response.data.customers);
       })
       .catch((e: Error) => {
@@ -47,7 +48,7 @@ const CustomersList: React.FC = () => {
           </button>
         </h5>
 
-        <ul className="list-group">
+        <ul className="list-group" aria-label="customers">
           {customers &&
             customers.map((customer, index) => (
               <li

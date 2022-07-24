@@ -23,7 +23,7 @@ const Customer: React.FC = () => {
     CustomerDataService.get(id)
       .then((response: any) => {
         setCurrentCustomer(response?.data?.customer);
-        console.log(response.data);
+        // console.log(response.data);
       })
       .catch((e: Error) => {
         console.log(e);
@@ -78,6 +78,7 @@ const Customer: React.FC = () => {
   const updateCustomer = () => {
     CustomerDataService.update(currentCustomer.id, currentCustomer)
       .then((response: any) => {
+        setCurrentCustomer(response?.data?.customer);
         setMessage("The customer is updated successfully!");
       })
       .catch((e: Error) => {
@@ -109,6 +110,7 @@ const Customer: React.FC = () => {
                   <input
                     type="text"
                     className="form-control"
+                    data-testid={key}
                     id={key}
                     name={key}
                     defaultValue={currentCustomer.attributes[key]}

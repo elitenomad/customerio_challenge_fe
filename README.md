@@ -14,8 +14,6 @@ In the project directory, you can run:
 
 ```
 npm install
-# or
-yarn install
 ```
 
 or
@@ -24,9 +22,22 @@ or
 
 ```
 npm start
-# or
-yarn start
 ```
+
+### To run tests
+
+```
+npm run test
+```
+
+### Tests
+  - Tested limited set of features for each component
+    - App
+    - CustomerList
+    - Customer
+  - Improvement is to use Cypress and write a Feature specs to cover user flows
+  - Used simple React state hooks to hold the state. 
+  - Cachig is ignored and refreshing the page will call the API endpoints.
 
 Open [http://localhost:8081](http://localhost:8081) to view it in the browser.
 
