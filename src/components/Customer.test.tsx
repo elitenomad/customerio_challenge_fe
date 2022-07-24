@@ -1,7 +1,7 @@
 import React from "react";
 import Customer from "./Customer";
 import CustomerService from "../services/CustomerService";
-import { waitFor, screen, fireEvent, render,within } from "@testing-library/react";
+import { waitFor, screen, fireEvent, render } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 
 jest.mock('react-router-dom', () => ({
