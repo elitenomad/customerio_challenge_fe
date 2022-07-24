@@ -30,7 +30,7 @@ npm start
 npm run test
 ```
 
-### Tests
+### Decisions
   - Tested limited set of features for each component
     - App
     - CustomerList
