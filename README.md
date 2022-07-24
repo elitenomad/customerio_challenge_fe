@@ -1,4 +1,4 @@
-# React Typescript REST API's example using Axios library
+# CUSTOMER IO - FE
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
